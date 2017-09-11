@@ -1,0 +1,21 @@
+{
+  "name": "audio_view",
+  "version": "1.0.0",
+  "description": "audio view",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "audio",
+    "view"
+  ],
+  "author": "fox",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.0"
+  }
+}
