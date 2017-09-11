@@ -8,9 +8,15 @@
 	<canvas id="audio_canvas"></canvas>
 	<script>
 		var AudioContext = window.AudioContext || window.webkitAudioContext
-		var audioCtx
+		// 音频上下文环境
+		var audioCtx = new AudioContext()
 		try {
-			audioCtx = new AudioContext()
+			var source = audioCtx.createBufferSource()
+			// 控制音量
+			var gain = audioCtx.createGain()
+			// 分析器
+			var analyse = audioCtx.createAnalyser()
+
 			var request = new XMLHttpRequest()
 
 			 //初始化 HTTP 请求参数, 配置请求类型，文件路径等
@@ -28,32 +34,22 @@
 			 	// 解码音频，分析音频
 			 	audioCtx.decodeAudioData(audioData,
 			 		function(buffer) {
-						source = audioCtx.createBufferSource()
-			 			var analyser = audioCtx.createAnalyser()
-
+			 			// 设置音频数据
 			 			source.buffer = buffer
+			 			// 连接分析器
+			 			source.connect(analyse)
+			 			// 连接到设备的, 类似于pipe
+			 			// 扬声器
+			 			analyse.connect(audioCtx.destination)
+			 			analyse.fftSize = 2048
 
-			 			source.connect(analyser)
-			 			analyser.connect(audioCtx.destination)
+			 			var arr = new Uint8Array(analyse.frequencyBinCount)
 
-
-			 			var bufferLength = analyser.frequencyBinCount,
-			 			    dataArray = new Uint8Array(analyser.frequencyBinCount)
-
-
-			 			analyser.getByteFrequencyData(dataArray)
-
-			 			var canvas = document.getElementById('audio_canvas'),
-			 			    ctx = canvas.getContext("2d"),
-			 			    c_width = canvas.width,
-			 			    c_height = canvas.height;
-
-			 			for(var i = 0; i < bufferLength; i++) {
-			 			     value = dataArray[i];
-			 			     ctx.fillStyle = '#f99';
-			 			     ctx.fillRect(i, c_height - value, 1, value);
-			 			}
-
+			 			setInterval(function() {
+			 				analyse.getByteFrequencyData(arr)
+			 				// ok了
+			 				console.log(arr)
+			 			}, 1000)
 			 		},
 				 	function(e) {
 				 		console.log("Error with decoding audio data" + e.err)

@@ -4,7 +4,7 @@
   "description": "audio view",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon --inspect"
   },
   "keywords": [
     "audio",
