@@ -3,10 +3,80 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			position: relative;
+			display: -webkit-flex;
+			display: -moz-flex;
+			display: -ms-flex;
+			display: -o-flex;
+			display: flex;
+			justify-content: center;
+			width: 100vw;
+			height: 100vh;
+		}
+		.box{
+			width: 6px;
+			height: 2px;
+			background-color: red;
+			position: absolute;
+			bottom: 0;
+		}
+		.boxs{
+			position: relative;
+			left: -25%;
+		}
+	</style>
 </head>
 <body>
-	<canvas id="audio_canvas"></canvas>
 	<script>
+		var onoff = false
+		var lastTime = 0;
+		var prefixes = 'webkit moz ms o'.split(' '); //各浏览器前缀
+
+		var requestAnimationFrame = window.requestAnimationFrame;
+		var cancelAnimationFrame = window.cancelAnimationFrame;
+
+		var prefix;
+		//通过遍历各浏览器前缀，来得到requestAnimationFrame和cancelAnimationFrame在当前浏览器的实现形式
+		for( var i = 0; i < prefixes.length; i++ ) {
+			if ( requestAnimationFrame && cancelAnimationFrame ) {
+				break;
+			}
+			prefix = prefixes[i];
+			requestAnimationFrame = requestAnimationFrame || window[ prefix + 'RequestAnimationFrame' ];
+			cancelAnimationFrame  = cancelAnimationFrame  || window[ prefix + 'CancelAnimationFrame' ] || window[ prefix + 'CancelRequestAnimationFrame' ];
+		}
+
+		//如果当前浏览器不支持requestAnimationFrame和cancelAnimationFrame，则会退到setTimeout
+		if ( !requestAnimationFrame || !cancelAnimationFrame ) {
+			requestAnimationFrame = function( callback, element ) {
+				var currTime = new Date().getTime();
+			  //为了使setTimteout的尽可能的接近每秒60帧的效果
+			  var timeToCall = Math.max( 0, 16 - ( currTime - lastTime ) ); 
+			  var id = window.setTimeout( function() {
+			  	callback( currTime + timeToCall );
+			  }, timeToCall );
+			  lastTime = currTime + timeToCall;
+			  return id;
+			};
+			
+			cancelAnimationFrame = function( id ) {
+				window.clearTimeout( id );
+			};
+		}
+
+		//得到兼容各浏览器的API
+		window.requestAnimationFrame = requestAnimationFrame; 
+		window.cancelAnimationFrame = cancelAnimationFrame;
+
+		// 以上为动画兼容
+
+
 		var AudioContext = window.AudioContext || window.webkitAudioContext
 		// 音频上下文环境
 		var audioCtx = new AudioContext()
@@ -20,7 +90,7 @@
 			var request = new XMLHttpRequest()
 
 			 //初始化 HTTP 请求参数, 配置请求类型，文件路径等
-			 request.open('GET', 'demo.mp3', true)
+			 request.open('GET', 'demo3.mp3', true)
 
 			 // 配置数据返回类型,从服务器取回二进制数据
 			 request.responseType = 'arraybuffer'
@@ -38,28 +108,51 @@
 			 			source.buffer = buffer
 			 			// 连接分析器
 			 			source.connect(analyse)
+			 			analyse.connect(gain)
 			 			// 连接到设备的, 类似于pipe
 			 			// 扬声器
-			 			analyse.connect(audioCtx.destination)
-			 			analyse.fftSize = 2048
+			 			gain.connect(audioCtx.destination)
+			 			analyse.fftSize = 256
+			 			// analyse.fftSize = 2048
+			 			gain.gain.value = 1
 
-			 			var arr = new Uint8Array(analyse.frequencyBinCount)
 
-			 			setInterval(function() {
-			 				analyse.getByteFrequencyData(arr)
-			 				// ok了
-			 				console.log(arr)
-			 			}, 1000)
+			 			source.loop = true
+			 			var arr = new Uint8Array(analyse.frequencyBinCount);
+
+			 			var boxs = document.createElement('div');
+			 			boxs.classList.add('boxs')
+			 			for (var i = 0, len = analyse.frequencyBinCount; i < len; i++) {
+			 				var box = document.createElement('div')
+			 				box.classList.add('box')
+			 				box.style.left = 7 * i + 'px'
+			 				boxs.appendChild(box);
+			 			}
+			 			document.body.appendChild(boxs);
+			 			var childs = boxs.children
+
+			 			function v(){
+			 				analyse.getByteFrequencyData(arr);
+			 				for (var i = 0, len = analyse.frequencyBinCount; i < len; i++) {
+			 					childs[i].style.height = arr[i] * 2 + 'px'
+			 				}
+			 				requestAnimationFrame(v);
+			 			}
+
+			 			requestAnimationFrame(v);
+			 			source.start(0)
+
+
 			 		},
-				 	function(e) {
-				 		console.log("Error with decoding audio data" + e.err)
-				 	}
-			 	)
+			 		function(e) {
+			 			console.log("Error with decoding audio data" + e.err)
+			 		}
+			 		)
 			 }
-		} catch (err) {
-			alert('Your browser does not support AudioContext!')
-			console.log(err)
-		}
-	</script>
-</body>
-</html>
+			} catch (err) {
+				alert('Your browser does not support AudioContext!')
+				console.log(err)
+			}
+		</script>
+	</body>
+	</html>
