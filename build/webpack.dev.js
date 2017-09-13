@@ -2,6 +2,7 @@ const express = require('express')
 const webpackDevMiddleware = require("webpack-dev-middleware")
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
+const open = require("open")
 const webpack = require('webpack')
 const merge = require('webpack-merge')
 const base = require('./webpack.base.js')
@@ -41,3 +42,4 @@ app.listen(3000, function (err) {
 	}
 	console.log("Listening on port 3000!")
 })
+open("http://localhost:3000/", 'chrome')
