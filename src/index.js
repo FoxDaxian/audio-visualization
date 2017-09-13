@@ -1,2 +1,7 @@
-const a = '冯世雨'
-console.log(a)
+class person {
+	constructor () {
+		console.log(1);
+	}
+}
+var hahahaha = new person()
+console.log(hahahaha)

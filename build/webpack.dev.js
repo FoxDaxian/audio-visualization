@@ -6,7 +6,10 @@ const webpack = require('webpack')
 const merge = require('webpack-merge')
 const base = require('./webpack.base.js')
 
-base.entry = ['webpack-hot-middleware/client?noInfo=true&reload=true', base.entry]
+Object.keys(base.entry).forEach(function (el) {
+	// noInfo 取消控制台打印，reload 刷新浏览器
+	base.entry[el] = ['webpack-hot-middleware/client?noInfo=true&reload=true'].concat(base.entry[el])
+})
 const dev_config = merge(base, {
  	devtool: "eval-source-map",
 	plugins: [new HtmlWebpackPlugin({
@@ -22,12 +25,13 @@ const compiler = webpack(dev_config)
 
 app.use(webpackDevMiddleware(compiler, {
 	publicPath: "/",
-	stats:{
+	stats: {
 		colors: true,
-		chunks: false
+		chunks: false // 和webpack版本有关系
 	}
 }))
 app.use(require("webpack-hot-middleware")(compiler))
+
 app.use(express.static(require("path").resolve(__dirname, '../')))
 
 app.listen(3000, function (err) {
@@ -35,5 +39,5 @@ app.listen(3000, function (err) {
 		console.log('出错了')
 		return false
 	}
-	console.log("Listening on port 3000!");
-});
+	console.log("Listening on port 3000!")
+})
