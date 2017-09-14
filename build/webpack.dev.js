@@ -42,4 +42,4 @@ app.listen(3000, function (err) {
 	}
 	console.log("Listening on port 3000!")
 })
-open("http://localhost:3000/", 'chrome')
+open("http://localhost:3000/")
