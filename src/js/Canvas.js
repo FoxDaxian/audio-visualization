@@ -1,10 +1,11 @@
 import base from './Canvas_base.js'
 
 class Canvas extends base {
-	constructor (buffer) {
+	constructor (buffer = []) {
 		super()
 		this.setStyle()
 		this.buffer = buffer
+		this.executed = ''
 
 		// 平均值用到的数据
 		this.total = 0
@@ -12,6 +13,7 @@ class Canvas extends base {
 		this.capHead = []
 		window.addEventListener('resize', () => {
 			this.setStyle()
+			this[this.executed]()
 		})
 	}
 
@@ -37,11 +39,11 @@ class Canvas extends base {
 				this.capHead.push(value)
 			}
 
-			if (this.capHead[i] < value) {
+			if (value < this.capHead[i]) {
+				this.ctx.fillRect((width + space) * i, this.height - (--this.capHead[i]) - 10, width, -forShow)
+			} else {
 				this.ctx.fillRect((width + space) * i, this.height - value - 10, width, -forShow)
 				this.capHead[i] = value
-			} else {
-				this.ctx.fillRect((width + space) * i, this.height - (--this.capHead[i] > 0 ? --this.capHead[i] : 0) - 10, width, -forShow)
 			}
 		}
 
@@ -77,12 +79,50 @@ class Canvas extends base {
 		})
 	}
 
+	particle () {
+		this.preLoad('../../public/note.png', (arg) => {
+			this.executed = 'particle'
+			this.ctx.clearRect(0, 0, this.width, this.height)
+			this.ctx.drawImage(arg, 0, 0)
+
+			const imgData = this.ctx.getImageData(0, 0, arg.width, arg.height)
+			const len = imgData.data.length
+			const temp = []
+			for (let i = 0; i < len; i += 4) {
+				if (imgData.data[i + 3] > 100) {
+					temp.push([imgData.data[i], imgData.data[i + 1], imgData.data[i + 2], imgData.data[i + 3]])
+				}
+			}
+
+			const imgData2 = this.ctx.createImageData(arg.width, arg.height)
+			for (let i = 0; i < temp.length; i += 4){
+				const spliceArr =  temp.splice(0, 1)
+				imgData2.data[i + 0] = spliceArr[0][0]
+				imgData2.data[i + 1] = spliceArr[0][1]
+				imgData2.data[i + 2] = spliceArr[0][2]
+				imgData2.data[i + 3] = spliceArr[0][3]
+			}
+			this.ctx.putImageData(imgData2, 0, 0)
+
+		})
+	}
+
 	average () {
 		this.total = 0
 		for (let i = 0; i < this.len; i++) {
 			this.total += this.buffer[i]
 		}
 		return this.total / this.len
+	}
+
+	preLoad (src = '../../public/note.png', callback = () => {
+		console.log('proload completed')
+	}) {
+		const img = document.createElement('img')
+		img.src = src
+		img.onload = () => {
+			callback.call(this, img)
+		}
 	}
 }
 

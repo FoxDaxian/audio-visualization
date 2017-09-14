@@ -1,3 +1,6 @@
+import raf from './requestAnimationFrame.js'
+
+const { requestAnimationFrame } = raf
 class Canvas {
 	constructor () {
 		const canvas = document.createElement('canvas')
@@ -6,6 +9,7 @@ class Canvas {
 		this.width = 0
 		this.height = 0
 		this.ctx = canvas.getContext('2d')
+		this.requestAnimationFrame = requestAnimationFrame.bind(window)
 	}
 
 	setStyle () {
