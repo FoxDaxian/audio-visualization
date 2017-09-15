@@ -15,6 +15,16 @@ module.exports = {
 			include: path.resolve(__dirname, '../src/'),
 			exclude: /(node_modules|bower_components)/,
 			use: 'babel-loader'
+		}, { // 处理图片,####超过尺寸会使用file-loader，所以记得下载
+			test:/\.(png|jpe?g|gif|svg)(\?.*)?$/,
+			use:[{
+				loader:"url-loader",
+				options:{
+					limit:10000,
+					name:"static/img/[name].[hash].[ext]"
+				}
+			}]
+
 		}]
 	}
 }

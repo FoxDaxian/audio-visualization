@@ -138,7 +138,7 @@ class Canvas extends base {
 		return this.total / this.len / 2
 	}
 
-	preLoad (src = '/public/note.png') {
+	preLoad (src = `${ require('../../public/note.png') }`) {
 		this.imgRelated.preloading = !this.imgRelated.preloading
 		const _this = this
 		const img = document.createElement('img')
