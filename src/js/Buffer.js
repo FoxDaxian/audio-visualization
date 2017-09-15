@@ -9,7 +9,12 @@ class Buffer extends base {
 	}
 
 	execute (options) {
-		const { type = 'default', fft = 2048 } = options
+		if (options.type === 'circle') {
+			options.fft = 32
+		} else {
+			options.fft = 2048
+		}
+		const { type = 'default', fft } = options
 		try {
 		    this.axios({
 		        method: 'get',

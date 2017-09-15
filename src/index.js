@@ -1,10 +1,8 @@
 import Buffer from './js/Buffer.js'
-import Canvas from './js/Canvas.js' 
+import Canvas from './js/Canvas.js'
 
-const canvas = new Canvas()
-canvas.particle()
-
-// const buffer = new Buffer()
-// buffer.execute({
-//     fft: 2048
-// })
+const buffer = new Buffer()
+buffer.execute({
+    type: 'particle',
+    fft: 2048
+})
