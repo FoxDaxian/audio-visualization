@@ -28,7 +28,7 @@ class Canvas extends base {
 			particleSize: 3,
 			range: 2,
 			randomRange: 8.5,
-			size: 200
+			size: 300
 		}
 
 		window.addEventListener('resize', () => {
@@ -94,7 +94,7 @@ class Canvas extends base {
 			this.ctx.beginPath()
 			this.ctx.arc(this.width / 2, this.height / 2, buf, 0, Math.PI * 2, true)
 			this.ctx.closePath()
-			this.ctx.lineWidth = 2
+			this.ctx.lineWidth = 4
 			this.ctx.strokeStyle = `#${ buf }`
 			this.ctx.stroke()
 		})
@@ -147,7 +147,6 @@ class Canvas extends base {
 			this.imgRelated.preloading = !this.imgRelated.preloading
 			this.imgRelated.preloadCompleted = true
 			this.imgRelated.img = img
-
 			if (img.width > this.particleOPtion.size) {
 				img.height = this.particleOPtion.size * img.height / img.width
 				img.width = this.particleOPtion.size

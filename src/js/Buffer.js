@@ -18,7 +18,7 @@ class Buffer extends base {
 		try {
 		    this.axios({
 		        method: 'get',
-		        url: 'https://oqvlh6ipq.bkt.clouddn.com/demo.mp3'
+		        url: '/public/demo.mp3'
 		    }).then((res) => {
 		        const audioData = res.data
 		        // 解码音频，分析音频
